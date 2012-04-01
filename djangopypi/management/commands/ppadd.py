@@ -68,7 +68,7 @@ added"""
 
         try:
             # can't use get_or_create as that demands there be an owner
-            package = Package.objects.get(name=meta.name)
+            package = Package.objects.create(name=meta.name)
             isnewpackage = False
         except Package.DoesNotExist:
             package = Package(name=meta.name)
@@ -79,56 +79,16 @@ added"""
             print "%s-%s already added" % (meta.name, meta.version)
             return
 
-        # algorithm as follows: If owner is given, try to grab user with that
-        # username from db. If doesn't exist, bail. If no owner set look at
-        # mail address from metadata and try to get that user. If it exists
-        # use it. If not, bail.
-        owner = None
-
-        if ownerid:
-            try:
-                if "@" in ownerid:
-                    owner = User.objects.get(email=ownerid)
-                else:
-                    owner = User.objects.get(username=ownerid)
-            except User.DoesNotExist:
-                pass
-        else:
-            try:
-                owner = User.objects.get(email=meta.author_email)
-            except User.DoesNotExist:
-                pass
-
-        if not owner:
-            print "No owner defined. Use --owner to force one"
-            return
-
-        # at this point we have metadata and an owner, can safely add it.
-
-        package.owner = owner
-        # Some packages don't have proper licence, seems to be a problem
-        # with setup.py upload. Use "UNKNOWN"
-        package.license = meta.license or "Unknown"
-        package.metadata_version = meta.metadata_version
-        package.author = meta.author
-        package.home_page = meta.home_page
-        package.download_url = meta.download_url
-        package.summary = meta.summary
-        package.description = meta.description
-        package.author_email = meta.author_email
-
-        package.save()
-
-        for classifier in meta.classifiers:
-            package.classifiers.add(
-                    Classifier.objects.get_or_create(name=classifier)[0])
-
         release = Release()
         release.version = meta.version
         release.package = package
+
+        for key in meta:
+            release.package_info[key] = getattr(meta, key)
+
         release.save()
 
-        distribution = Distribution(release=release, uploader=owner)
+        distribution = Distribution(release=release)
 
         filename = os.path.basename(path)
         file = File(open(path, "rb"))
