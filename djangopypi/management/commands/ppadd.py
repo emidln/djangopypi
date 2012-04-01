@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from urlparse import urlsplit
 from setuptools.package_index import PackageIndex
 from django.contrib.auth.models import User
-from djangopypi.models import Package, Release, Classifier
+from djangopypi.models import Package, Release, Classifier, Distribution
 
 
 
@@ -126,11 +126,16 @@ added"""
         release = Release()
         release.version = meta.version
         release.package = package
-        filename = os.path.basename(path)
-
-        file = File(open(path, "rb"))
-        release.distribution.save(filename, file)
         release.save()
+
+        distribution = Distribution(release=release, uploader=owner)
+
+        filename = os.path.basename(path)
+        file = File(open(path, "rb"))
+        distribution.content.save(filename, file)
+
+        distribution.save()
+
         print "%s-%s added" % (meta.name, meta.version)
 
     def _get_meta(self, path):
