@@ -56,7 +56,11 @@ def distribution_hash(sender, instance, *args, **kwargs):
         except Exception:
             log.exception("Error calculating hash")
 
+def distribution_delete_file(sender, instance, using, *args, **kwargs):
+    instance.content.delete(False)
+
 signals.post_save.connect(autohide_new_release_handler, sender=Release)
 signals.pre_save.connect(autohide_save_release_handler, sender=Release)
 signals.pre_save.connect(autohide_save_package_handler, sender=Package)
 signals.post_save.connect(distribution_hash, sender=Distribution)
+signals.post_delete.connect(distribution_delete_file, sender=Distribution)
