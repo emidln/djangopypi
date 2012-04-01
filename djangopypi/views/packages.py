@@ -24,7 +24,12 @@ def simple_index(request, **kwargs):
 def details(request, package, **kwargs):
     kwargs.setdefault('template_object_name', 'package')
     kwargs.setdefault('queryset', Package.objects.all())
-    return list_detail.object_detail(request, object_id=package, **kwargs)
+
+    try:
+        return list_detail.object_detail(request, object_id=package, **kwargs)
+    except Http404:
+        # If the package is not found by name, try to find by 'alternative name'
+        return list_detail.object_detail(request, slug=package, slug_field='alternative_name', **kwargs)
 
 def simple_details(request, package, **kwargs):
     kwargs.setdefault('template_name', 'djangopypi/package_detail_simple.html')

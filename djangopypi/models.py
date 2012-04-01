@@ -61,6 +61,7 @@ class Package(models.Model):
                                     related_name="packages_owned")
     maintainers = models.ManyToManyField(User, blank=True,
                                          related_name="packages_maintained")
+    alternative_name = models.CharField(max_length=255, unique=True, blank=True, null=True)
 
     class Meta:
         verbose_name = _(u"package")
