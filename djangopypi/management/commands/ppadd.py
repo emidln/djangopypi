@@ -7,21 +7,14 @@ from __future__ import with_statement
 import os
 import tempfile
 import shutil
-import urllib
 
 import pkginfo
 
 from django.core.files.base import File
 from django.core.management.base import LabelCommand
-from optparse import make_option
 from contextlib import contextmanager
-from urlparse import urlsplit
 from setuptools.package_index import PackageIndex
-from django.contrib.auth.models import User
-from djangopypi.models import Package, Release, Classifier, Distribution
-
-
-
+from djangopypi.models import Package, Release, Distribution
 
 
 @contextmanager
@@ -32,24 +25,12 @@ def tempdir():
     yield d
     shutil.rmtree(d)
 
+
 class Command(LabelCommand):
-    option_list = LabelCommand.option_list + (
-            make_option("-o", "--owner", help="add packages as OWNER",
-                        metavar="OWNER", default=None),
-        )
     help = """Add one or more packages to the repository. Each argument can
 be a package name or a URL to an archive or egg. Package names honour
 the same rules as easy_install with regard to indicating versions etc.
-
-If a version of the package exists, but is older than what we want to install,
-the owner remains the same.
-
-For new packages there needs to be an owner. If the --owner option is present
-we use that value. If not, we try to match the maintainer of the package, form
-the metadata, with a user in out database, based on the If it's a new package
-and the maintainer emailmatches someone in our user list, we use that. If not,
-the package can not be
-added"""
+"""
 
     def __init__(self, *args, **kwargs):
         self.pypi = PackageIndex()
@@ -59,15 +40,14 @@ added"""
         with tempdir() as tmp:
             path = self.pypi.download(label, tmp)
             if path:
-                self._save_package(path, options["owner"])
+                self._save_package(path)
             else:
                 print "Could not add %s. Not found." % label
 
-    def _save_package(self, path, ownerid):
+    def _save_package(self, path):
         meta = self._get_meta(path)
 
         try:
-            # can't use get_or_create as that demands there be an owner
             package = Package.objects.create(name=meta.name)
             isnewpackage = False
         except Package.DoesNotExist:
