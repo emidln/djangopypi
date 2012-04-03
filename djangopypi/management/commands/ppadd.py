@@ -46,16 +46,12 @@ the same rules as easy_install with regard to indicating versions etc.
 
     def _save_package(self, path):
         meta = self._get_meta(path)
+        if not meta:
+            return
 
-        try:
-            package = Package.objects.create(name=meta.name)
-            isnewpackage = False
-        except Package.DoesNotExist:
-            package = Package(name=meta.name)
-            isnewpackage = True
+        package, _ = Package.objects.get_or_create(name=meta.name)
 
-        release = package.get_release(meta.version)
-        if not isnewpackage and release and release.version == meta.version:
+        if package.get_release(meta.version):
             print "%s-%s already added" % (meta.name, meta.version)
             return
 
