@@ -21,26 +21,29 @@ def simple_index(request, **kwargs):
     kwargs.setdefault('template_name', 'djangopypi/package_list_simple.html')
     return index(request, **kwargs)
 
-def details(request, package, **kwargs):
+def details(request, package, proxy_folder='pypi', **kwargs):
     kwargs.setdefault('template_object_name', 'package')
     kwargs.setdefault('queryset', Package.objects.all())
 
-    try:
+    instance = Package.objects.get_by_name(package)
+
+    if not instance:
+        if settings.DJANGOPYPI_PROXY_MISSING:
+            return HttpResponseRedirect('%s/%s/%s/' %
+                                        (settings.DJANGOPYPI_PROXY_BASE_URL.rstrip('/'),
+                                         proxy_folder,
+                                         package))
+        raise Http404(u'%s is not a registered package' % (package,))
+
+    if instance.name.lower() == package.lower():
         return list_detail.object_detail(request, object_id=package, **kwargs)
-    except Http404:
-        # If the package is not found by name, try to find by 'alternative name'
-        return list_detail.object_detail(request, slug=package, slug_field='alternative_name', **kwargs)
+    else:
+        return list_detail.object_detail(request, slug_field='alternative_name', slug=package, **kwargs)
 
 def simple_details(request, package, **kwargs):
+    kwargs.setdefault('proxy_folder', 'simple')
     kwargs.setdefault('template_name', 'djangopypi/package_detail_simple.html')
-    try:
-        return details(request, package, **kwargs)
-    except Http404, e:
-        if settings.DJANGOPYPI_PROXY_MISSING:
-            return HttpResponseRedirect('%s/%s/' % 
-                                        (settings.DJANGOPYPI_PROXY_BASE_URL.rstrip('/'),
-                                         package))
-        raise e
+    return details(request, package, **kwargs)
 
 def doap(request, package, **kwargs):
     kwargs.setdefault('template_name', 'djangopypi/package_doap.xml')

@@ -22,7 +22,7 @@ except ImportError:
     try:
         from django.contrib.csrf.middleware import csrf_exempt
     except ImportError:
-        def csrf_except(view_func): return view_func
+        def csrf_exempt(view_func): return view_func
 
 def basic_auth(view_func):
     """ Decorator for views that need to handle basic authentication such as

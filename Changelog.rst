@@ -1,6 +1,17 @@
 History
 =======
 
+0.4.4 (2012-04-18)
+------------------
+
+* xmlrpc bug fixes
+* CSRF token template tags on forms
+* Transaction bug fixes
+* Switched to logging over stdout
+* Proxy simple and detail views when necessary
+* Removed unused legacy view, submit_package_or_release
+* ppadd management command working again
+
 0.4.3 (2011-02-22)
 ------------------
 

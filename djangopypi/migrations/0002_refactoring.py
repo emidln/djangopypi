@@ -105,7 +105,7 @@ class Migration(SchemaMigration):
         db.add_column('djangopypi_release', 'hidden', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True), keep_default=False)
 
         # Adding field 'Release.created'
-        db.add_column('djangopypi_release', 'created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, default='', blank=True), keep_default=False)
+        db.add_column('djangopypi_release', 'created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, default='1970-01-01 00:00:00', blank=True), keep_default=False)
 
         # Removing unique constraint on 'Release', fields ['project', 'platform', 'distribution', 'version', 'pyversion']
         db.delete_unique('djangopypi_release', ['project_id', 'platform', 'distribution', 'version', 'pyversion'])
@@ -156,9 +156,6 @@ class Migration(SchemaMigration):
         # Removing M2M table for field maintainers on 'Package'
         db.delete_table('djangopypi_package_maintainers')
 
-        # Adding field 'Classifier.id'
-        db.add_column('djangopypi_classifier', 'id', self.gf('django.db.models.fields.AutoField')(default='', primary_key=True), keep_default=False)
-
         # Changing field 'Classifier.name'
         db.alter_column('djangopypi_classifier', 'name', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True))
 
@@ -169,7 +166,7 @@ class Migration(SchemaMigration):
         db.add_column('djangopypi_release', 'filetype', self.gf('django.db.models.fields.CharField')(default='', max_length=255, blank=True), keep_default=False)
 
         # Adding field 'Release.upload_time'
-        db.add_column('djangopypi_release', 'upload_time', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default='', blank=True), keep_default=False)
+        db.add_column('djangopypi_release', 'upload_time', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default='1970-01-01 00:00:00', blank=True), keep_default=False)
 
         # Adding field 'Release.pyversion'
         db.add_column('djangopypi_release', 'pyversion', self.gf('django.db.models.fields.CharField')(default='', max_length=255, blank=True), keep_default=False)

@@ -17,3 +17,7 @@ Authors/Contributors
 * Halldór Rúnarsson <halldor89@gmail.com>
 * Jannis Leidel <jannis@leidel.info>
 * Sebastien Fievet <zyegfryed@gmail.com>
+* Jaap Roes <jaap@u-e-h.net>
+* Stefano Rivera <stefano@rivera.za.net>
+* David Miller <david@deadpansincerity.com>
+* Tomasz Wysocki

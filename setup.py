@@ -1,10 +1,12 @@
 import os
 from setuptools import setup, find_packages
 
+
+
 def fread(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-version = '0.4.3'
+version = '0.4.4'
 
 setup(
     name='djangopypi',
@@ -30,13 +32,18 @@ setup(
     author_email='askh@opera.com',
     maintainer='Benjamin Liles',
     maintainer_email='benliles@gmail.com',
-    url='http://github.com/benliles/chishop',
+    url='http://github.com/benliles/djangopypi',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
         'setuptools',
+        'pkginfo',
         'docutils',
+    ],
+    setup_requires=[
+        'setuptools',
+        'setuptools-git',
     ],
 )

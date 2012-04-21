@@ -52,6 +52,25 @@ class Classifier(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class PackageManager(models.Manager):
+    def get_by_name(self, name):
+        """
+        Get by name or alternative name
+        """
+        packages = self.filter(name=name)
+
+        if packages:
+            return packages.get()
+        else:
+            packages = self.filter(alternative_name=name)
+
+            if packages:
+                return packages.get()
+            else:
+                return None
+
+
 class Package(models.Model):
     name = models.CharField(max_length=255, unique=True, primary_key=True,
                             editable=False)
@@ -62,6 +81,8 @@ class Package(models.Model):
     maintainers = models.ManyToManyField(User, blank=True,
                                          related_name="packages_maintained")
     alternative_name = models.CharField(max_length=255, unique=True, blank=True, null=True)
+
+    objects = PackageManager()
 
     class Meta:
         verbose_name = _(u"package")

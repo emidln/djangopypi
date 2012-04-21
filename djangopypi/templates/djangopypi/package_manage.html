@@ -1,13 +1,12 @@
-<html>
-	<head>
-		<title>Manage {{ package.name }}</title>
-	</head>
-	<body>
-		<h1>Manage {{ package.name }}</h1>
-		<ul>
-			<form action="" method="post">
-			{{ form.as_p }}
-			<input type="submit" value="Submit" />
-		</ul>
-	</body>
-</html>
+{% extends 'djangopypi/base.html' %}
+{% block title %}Manage {{ package.name }}{% endblock %}
+{% block body %}
+<h1>Manage {{ package.name }}</h1>
+<div>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+</div>
+{% endblock %}
